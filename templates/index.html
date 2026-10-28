@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ckb" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MDLHONI - پلاتفۆرمی پێشکەوتووی شیکاریی میم کۆین</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background: radial-gradient(circle at top, #1a103c 0%, #0b071a 100%);
+        }
+    </style>
+</head>
+<body class="min-h-screen text-white p-6">
+
+    <!-- Header -->
+    <header class="max-w-7xl mx-auto flex justify-between items-center mb-8 pb-4 border-b border-purple-500/20">
+        <div class="flex items-center gap-3">
+            <span class="text-amber-500 text-2xl">♦</span>
+            <span class="text-2xl font-extrabold tracking-widest text-amber-400">M•D•L•H•O•N•I</span>
+            <span class="text-amber-500 text-2xl">♦</span>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <span class="text-sm text-purple-300">بەڕێز: {{ session.get('user', 'admin') }}</span>
+            <a href="/logout" class="px-4 py-2 bg-red-500/20 border border-red-500/40 text-red-300 rounded-xl text-xs font-semibold hover:bg-red-500/30 transition">چوونەدەرەوە</a>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto space-y-8">
+
+        <!-- Search Box & Trigger Button -->
+        <div class="bg-[#130d2d]/90 border border-purple-500/40 rounded-3xl p-8 shadow-2xl space-y-6">
+            <h2 class="text-base font-extrabold text-amber-400 flex items-center gap-3">
+                <span class="text-xl">🔍</span> شیکاریی قووڵ و وریای میم کۆین و سمارت کۆنتراکت
+            </h2>
+            <form method="POST" class="space-y-5">
+                <div class="flex flex-col md:flex-row gap-4">
+                    <input type="text" name="contract" required placeholder="ناونیشانی کۆنتراکتی میم کۆین بنووسە (Solana / BSC / ETH)..." 
+                        class="flex-1 bg-[#1e1543] border border-purple-500/40 rounded-2xl px-5 py-4 text-sm text-white placeholder-gray-400 focus:outline-none focus:border-amber-400 shadow-inner">
+                    <select name="network" class="w-full md:w-48 bg-[#1e1543] border border-purple-500/40 rounded-2xl px-5 py-4 text-sm text-white focus:outline-none focus:border-amber-400 shadow-inner">
+                        <option>Solana</option>
+                        <option>BSC (Binance)</option>
+                        <option>Ethereum</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full py-4 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-black rounded-2xl text-base shadow-2xl transition transform hover:scale-[1.01] cursor-pointer border border-amber-400/50">
+                    🚀 ئەنجامدانی شیکاریی هەمەلایەنە بە AI و On-chain
+                </button>
+            </form>
+        </div>
+
+        {% if error_message %}
+        <div class="bg-red-500/20 border border-red-500/40 p-4 rounded-2xl text-center text-red-300 text-sm">
+            {{ error_message }}
+        </div>
+        {% endif %}
+
+        {% if token_data %}
+        <div class="space-y-8">
+            <!-- Header Info & Token Logo, Socials, External Links -->
+            <div class="bg-[#130d2d]/90 border border-purple-500/40 p-6 rounded-3xl flex flex-col md:flex-row justify-between items-center gap-4 shadow-xl">
+                
+                <div class="flex items-center gap-4">
+                    <img src="{{ token_data.logo }}" alt="Logo" class="w-12 h-12 rounded-full border-2 border-amber-400/50 object-cover shadow-md bg-purple-950">
+                    <div>
+                        <span class="text-xs text-gray-400 font-semibold">تۆکنی دۆزراوە:</span>
+                        <h3 class="text-xl font-extrabold text-amber-400 mt-1">{{ token_data.name }} ({{ token_data.symbol }})</h3>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <span class="text-xs text-gray-400">سۆشیاڵ:</span>
+                    {% if token_data.telegram %}
+                    <a href="{{ token_data.telegram }}" target="_blank" title="Telegram" class="w-9 h-9 flex items-center justify-center bg-blue-500/20 border border-blue-500/40 rounded-full text-blue-400 hover:bg-blue-500/40 transition">✈️</a>
+                    {% endif %}
+                    
+                    {% if token_data.twitter %}
+                    <a href="{{ token_data.twitter }}" target="_blank" title="Twitter / X" class="w-9 h-9 flex items-center justify-center bg-slate-700/40 border border-slate-500/40 rounded-full text-white hover:bg-slate-700 transition">𝕏</a>
+                    {% endif %}
+                    
+                    {% if token_data.website %}
+                    <a href="{{ token_data.website }}" target="_blank" title="Official Website" class="w-9 h-9 flex items-center justify-center bg-amber-500/20 border border-amber-500/40 rounded-full text-amber-400 hover:bg-amber-500/40 transition">🌐</a>
+                    {% endif %}
+
+                    {% if not token_data.telegram and not token_data.twitter and not token_data.website %}
+                    <span class="text-xs text-gray-500">بەردەست نییە</span>
+                    {% endif %}
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2">
+                    <a href="{{ token_data.pair_url }}" target="_blank" class="px-4 py-2.5 bg-purple-600/30 border border-purple-500/50 rounded-2xl text-xs text-purple-200 hover:bg-purple-600/50 transition font-bold shadow-md">DEXScreener ↗</a>
+                    <a href="{{ token_data.rugcheck_url }}" target="_blank" class="px-4 py-2.5 bg-red-600/20 border border-red-500/40 rounded-2xl text-xs text-red-300 hover:bg-red-600/40 transition font-bold shadow-md">Rugcheck 🛡️</a>
+                    <a href="{{ token_data.bubblemaps_url }}" target="_blank" class="px-4 py-2.5 bg-blue-600/20 border border-blue-500/40 rounded-2xl text-xs text-blue-300 hover:bg-blue-600/40 transition font-bold shadow-md">Bubblemaps 🫧</a>
+                </div>
+            </div>
+
+            <!-- General Stats Strip -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                <div class="bg-[#130d2d]/90 border border-purple-500/40 p-6 rounded-3xl shadow-xl">
+                    <div class="text-xs text-gray-400 font-bold mb-1">نرخی ئێستا</div>
+                    <div class="text-lg font-black text-amber-400 mt-1">{{ token_data.price }}</div>
+                </div>
+                <div class="bg-[#130d2d]/90 border border-purple-500/40 p-6 rounded-3xl shadow-xl">
+                    <div class="text-xs text-gray-400 font-bold mb-1">بەهای بازاڕ (Market Cap)</div>
+                    <div class="text-lg font-black text-emerald-400 mt-1">{{ token_data.market_cap }}</div>
+                </div>
+                <div class="bg-[#130d2d]/90 border border-purple-500/40 p-6 rounded-3xl shadow-xl">
+                    <div class="text-xs text-gray-400 font-bold mb-1">قەبارەی 24 کاتژمێر</div>
+                    <div class="text-lg font-black text-blue-400 mt-1">{{ token_data.volume_24h }}</div>
+                </div>
+                <div class="bg-[#130d2d]/90 border border-purple-500/40 p-6 rounded-3xl shadow-xl">
+                    <div class="text-xs text-gray-400 font-bold mb-1">پارەی شلە (Liquidity)</div>
+                    <div class="text-lg font-black text-purple-300 mt-1">{{ token_data.liquidity }}</div>
+                </div>
+            </div>
+
+            <!-- First Row of Analysis Sections -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                
+                <!-- AI & Recommendation -->
+                <div class="bg-[#130d2d]/90 border border-purple-500/40 p-7 rounded-3xl shadow-2xl space-y-4">
+                    <h4 class="text-sm font-extrabold text-amber-400 border-b border-purple-500/30 pb-3 flex items-center gap-2"><span>🎯</span> پێشنیاری کڕین و نمرەی AI</h4>
+                    <div class="text-center py-3">
+                        <span class="text-3xl font-black text-emerald-400">{{ token_data.ai_score }}</span>
+                        <div class="text-sm font-bold text-emerald-300 mt-2">{{ token_data.buy_recommendation }}</div>
+                    </div>
+                    <div class="text-xs text-gray-200 space-y-2 pt-2">
+                        <div class="flex justify-between"><span>گۆڕانی نرخ (24h):</span> <strong class="text-amber-400">{{ token_data.price_change }}</strong></div>
+                        <div class="flex justify-between"><span>Liquidity:</span> <strong class="text-emerald-400">{{ token_data.liquidity }}</strong></div>
+                        <div class="flex justify-between"><span>قەبارەی بازرگانی:</span> <strong class="text-blue-400">{{ token_data.volume_24h }}</strong></div>
+                    </div>
+                </div>
+
+                <!-- Rug / Honeypot -->
+                <div class="bg-[#130d2d]/90 border border-purple-500/40 p-7 rounded-3xl shadow-2xl space-y-4">
+                    <h4 class="text-sm font-extrabold text-amber-400 border-b border-purple-500/30 pb-3 flex items-center gap-2"><span>🛡️</span> مەترسی Rug / Honeypot</h4>
+                    <div class="text-center py-3">
+                        <span class="text-xl font-black text-emerald-400">{{ contract_data.honeypot_risk }}</span>
+                        <div class="text-xs text-red-400 mt-2">ئاستی ریسکی گشتی: <span class="font-bold">{{ contract_data.overall_risk }}</span></div>
+                    </div>
+                    <div class="text-xs text-gray-200 space-y-2 pt-2">
+                        <div class="flex justify-between"><span>قوفڵکردنی شلە:</span> <strong class="text-emerald-400">{{ contract_data.liquidity_status }}</strong></div>
+                        <div class="flex justify-between"><span>باجی کڕین/فرۆشتن:</span> <strong class="text-green-400">{{ token_data.buy_tax }} / {{ token_data.sell_tax }}</strong></div>
+                    </div>
+                </div>
+
+                <!-- Smart Contract -->
+                <div class="bg-[#130d2d]/90 border border-purple-500/40 p-7 rounded-3xl shadow-2xl space-y-4">
+                    <h4 class="text-sm font-extrabold text-amber-400 border-b border-purple-500/30 pb-3 flex items-center gap-2"><span>📜</span> شیکاری سمارت کۆنتراکت</h4>
+                    <div class="text-xs text-gray-200 space-y-3 pt-2">
+                        <div class="flex justify-between"><span>کۆد Verified:</span> <strong class="text-emerald-400">{{ token_data.verified }}</strong></div>
+                        <div class="flex justify-between"><span>Source Code:</span> <strong class="text-blue-400">{{ token_data.source_code }}</strong></div>
+                        <div class="flex justify-between"><span>Compiler:</span> <strong class="text-purple-300">{{ token_data.compiler }}</strong></div>
+                        <div class="flex justify-between"><span>Audit Status:</span> <strong class="text-emerald-400">{{ token_data.audit_status }}</strong></div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Second Row of Rich Analysis Sections (Technical, Whales, Predictions) -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                
+                <!-- Technical Indicators -->
+                <div class="bg-[#130d2d]/90 border border-purple-500/40 p-7 rounded-3xl shadow-2xl space-y-4">
+                    <h4 class="text-sm font-extrabold text-amber-400 border-b border-purple-500/30 pb-3 flex items-center gap-2"><span>📈</span> نیشانە تەکنیکییەکان</h4>
+                    <div class="text-xs text-gray-200 space-y-3 pt-2">
+                        <div class="flex justify-between"><span>RSI:</span> <strong class="text-amber-400">{{ token_data.rsi }}</strong></div>
+                        <div class="flex justify-between"><span>MACD:</span> <strong class="text-emerald-400">{{ token_data.macd }}</strong></div>
+                        <div class="flex justify-between"><span>Bollinger:</span> <strong class="text-blue-400">{{ token_data.bollinger }}</strong></div>
+                    </div>
+                </div>
+
+                <!-- On-chain & Whales -->
+                <div class="bg-[#130d2d]/90 border border-purple-500/40 p-7 rounded-3xl shadow-2xl space-y-4">
+                    <h4 class="text-sm font-extrabold text-amber-400 border-b border-purple-500/30 pb-3 flex items-center gap-2"><span>🐋</span> شیکاری On-chain & Whales</h4>
+                    <div class="text-xs text-gray-200 space-y-2.5 pt-2">
+                        <div class="flex justify-between"><span>Top Holders:</span> <strong class="text-amber-400">{{ token_data.top_holders }}</strong></div>
+                        <div class="flex justify-between"><span>رێژەی Whale:</span> <strong class="text-emerald-400">{{ token_data.whale_ratio }}</strong></div>
+                        <div class="flex justify-between"><span>والیتە نوێیەکان:</span> <strong class="text-blue-300">{{ token_data.new_wallets }}</strong></div>
+                        <div class="flex justify-between"><span>کۆی بەشداربووان:</span> <strong class="text-purple-300">{{ token_data.total_holders }}</strong></div>
+                        <div class="flex justify-between"><span>چالاکی وێڵ (Large Tx):</span> <strong class="text-emerald-400">{{ token_data.large_tx }}</strong></div>
+                    </div>
+                </div>
+
+                <!-- Price Prediction & General Info -->
+                <div class="bg-[#130d2d]/90 border border-purple-500/40 p-7 rounded-3xl shadow-2xl space-y-4">
+                    <h4 class="text-sm font-extrabold text-amber-400 border-b border-purple-500/30 pb-3 flex items-center gap-2"><span>🔮</span> پێشبینیی نرخ و زانیاری گشتی</h4>
+                    <div class="text-xs text-gray-200 space-y-2.5 pt-2">
+                        <div class="flex justify-between"><span>پێشبینی نرخ (AI):</span> <strong class="text-emerald-400">{{ token_data.price_prediction }}</strong></div>
+                        <div class="flex justify-between"><span>متمانەی مۆدێل:</span> <strong class="text-amber-400">{{ token_data.accuracy }}</strong></div>
+                        <div class="flex justify-between"><span>حاڵەتی بازاڕ:</span> <strong class="text-blue-300">{{ token_data.market_state }}</strong></div>
+                        <div class="flex justify-between"><span>بەرواری دەرکەوتن:</span> <strong class="text-gray-300">{{ token_data.launch_date }}</strong></div>
+                        <div class="flex justify-between"><span>تیم و پڕۆژە:</span> <strong class="text-emerald-400">{{ token_data.project_team }}</strong></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        {% else %}
+        <!-- Welcome state before searching -->
+        <div class="bg-[#130d2d]/60 border border-purple-500/20 rounded-3xl p-12 text-center space-y-3">
+            <div class="text-4xl">⚡</div>
+            <h3 class="text-lg font-bold text-amber-400">ئامادەیە بۆ شیکاری</h3>
+            <p class="text-xs text-gray-400">تکایە ناونیشانی کۆنتراکتی توکنەکەت لە سەرەوە بنووسە و دوگمەی شیکاری بگرە تاوەکو داتاکانی بە وردی و بە هەموو بەشەکانەوە پیشان بدات.</p>
+        </div>
+        {% endif %}
+
+    </main>
+
+    <footer class="max-w-7xl mx-auto mt-16 text-center text-xs text-gray-400 border-t border-purple-500/20 pt-6">
+        مافی ئەم بەرنامەیە پارێزراوە بۆ Agha Software © 2026
+    </footer>
+
+</body>
+</html>
